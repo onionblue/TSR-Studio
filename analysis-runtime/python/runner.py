@@ -20,7 +20,10 @@ def validate_groups(payload,smap):
 def pairs(feature,by,meta,all_pairwise=False):
     out=[];control=by.get(meta['controlGroup'],[]);model=by.get(meta['modelGroup'],[])
     primary=[(meta['controlGroup'],meta['modelGroup'],control,model)]+[(meta['modelGroup'],t,model,by.get(t,[])) for t in meta.get('treatmentGroups',[])]
-    comparisons=list(primary)
+    treatments=[t for t in meta.get('treatmentGroups',[]) if t in by];treatment_pairs=[]
+    for i,ga in enumerate(treatments):
+        for gb in treatments[i+1:]:treatment_pairs.append((ga,gb,by.get(ga,[]),by.get(gb,[])))
+    comparisons=list(primary)+treatment_pairs
     if all_pairwise:
         groups=[g for g in [meta.get('controlGroup'),meta.get('modelGroup'),*meta.get('treatmentGroups',[])] if g in by]
         seen={tuple(sorted((a,b))) for a,b,_,_ in comparisons}
@@ -28,12 +31,13 @@ def pairs(feature,by,meta,all_pairwise=False):
             for gb in groups[i+1:]:
                 if tuple(sorted((ga,gb))) not in seen:comparisons.append((ga,gb,by.get(ga,[]),by.get(gb,[])))
     primary_names={f'{gb}_vs_{ga}' for ga,gb,_,_ in primary}
+    treatment_names={f'{gb}_vs_{ga}' for ga,gb,_,_ in treatment_pairs}
     for ga,gb,a,b in comparisons:
         if len(a)<2 or len(b)<2: continue
         t,p,g=welch(a,b);rec=None
         if ga==meta['modelGroup'] and len(control):
             den=np.mean(model)-np.mean(control);rec=(np.mean(model)-np.mean(b))/den if abs(den)>1e-12 else 0
-        name=f'{gb}_vs_{ga}';out.append({'featureId':feature,'comparison':name,'comparisonScope':'primary' if name in primary_names else 'exploratory_pairwise','meanA':float(np.mean(a)),'meanB':float(np.mean(b)),'effect':float(np.mean(b)-np.mean(a)),'t':t,'pValue':p,'hedgesG':g,'recovery':rec})
+        name=f'{gb}_vs_{ga}';scope='primary' if name in primary_names else 'treatment_pairwise' if name in treatment_names else 'exploratory_pairwise';out.append({'featureId':feature,'comparison':name,'comparisonScope':scope,'meanA':float(np.mean(a)),'meanB':float(np.mean(b)),'effect':float(np.mean(b)-np.mean(a)),'t':t,'pValue':p,'hedgesG':g,'recovery':rec})
     return out
 def individual(payload):
     data=pd.DataFrame(payload['asset']['data']);smap=samples_map(payload);validate_groups(payload,smap);sid=next((x for x in ['Sample_ID','sample_id','Sample','sample'] if x in data.columns),None)

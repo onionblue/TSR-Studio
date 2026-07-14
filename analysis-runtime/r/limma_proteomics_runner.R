@@ -18,6 +18,7 @@ fit <- limma::lmFit(x, design)
 fit <- limma::eBayes(fit, robust=TRUE, trend=TRUE)
 control <- args[4]; model <- args[5]; treatments <- Filter(nzchar, strsplit(args[6],",",fixed=TRUE)[[1]])
 pairs <- list(c(control,model)); if(length(treatments)) for(z in treatments) pairs[[length(pairs)+1]] <- c(model,z)
+if(length(treatments)>=2) for(z in combn(treatments,2,simplify=FALSE)) pairs[[length(pairs)+1]] <- z
 out <- list()
 for(pair in pairs){
   a <- pair[1]; b <- pair[2]; if(!all(c(a,b) %in% colnames(design))) next
@@ -25,7 +26,8 @@ for(pair in pairs){
   f <- limma::eBayes(limma::contrasts.fit(fit,contrast),robust=TRUE,trend=TRUE)
   tab <- limma::topTable(f,number=Inf,sort.by="none",adjust.method="BH")
   ia <- rownames(samples)[group==a]; ib <- rownames(samples)[group==b]
-  out[[length(out)+1]] <- data.frame(featureId=rownames(tab),label=rownames(tab),comparison=paste0(b,"_vs_",a),comparisonScope="primary",meanA=rowMeans(x[,ia,drop=FALSE],na.rm=TRUE),meanB=rowMeans(x[,ib,drop=FALSE],na.rm=TRUE),effect=tab$logFC,t=tab$t,pValue=tab$P.Value,fdr=tab$adj.P.Val,hedgesG=NA_real_,recovery=NA_real_,AveExpr=tab$AveExpr,B=tab$B,log2Transformed=transformed)
+  scope <- if(a %in% treatments && b %in% treatments) "treatment_pairwise" else "primary"
+  out[[length(out)+1]] <- data.frame(featureId=rownames(tab),label=rownames(tab),comparison=paste0(b,"_vs_",a),comparisonScope=scope,meanA=rowMeans(x[,ia,drop=FALSE],na.rm=TRUE),meanB=rowMeans(x[,ib,drop=FALSE],na.rm=TRUE),effect=tab$logFC,t=tab$t,pValue=tab$P.Value,fdr=tab$adj.P.Val,hedgesG=NA_real_,recovery=NA_real_,AveExpr=tab$AveExpr,B=tab$B,log2Transformed=transformed)
 }
 if(!length(out)) stop("没有可运行的预设比较；请检查组名")
 write.csv(do.call(rbind,out),args[3],row.names=FALSE,na="")

@@ -20,7 +20,7 @@ export function exportResults(project:Project){
  XLSX.writeFile(wb,`${safe(project.meta.name)}_TSR_Studio_Complete_Results.xlsx`);
 }
 function exportModule(wb:XLSX.WorkBook,project:Project,r:AnalysisResult,asset?:DataAsset){
- const tag=short(r.module),base=30+project.results.indexOf(r)*8,lookup=new Map<string,Record<string,unknown>>();
+ const tag=short(r.module),base=30+project.results.indexOf(r)*10,lookup=new Map<string,Record<string,unknown>>();
  const idCandidates=['Gene_ID','Protein_ID','Protein','Feature_ID','Taxon','ASV_ID','ID','id','Name'];const idCol=idCandidates.find(c=>c in (asset?.data[0]??{}))??Object.keys(asset?.data[0]??{})[0];
  for(const row of asset?.data??[])lookup.set(String(row[idCol]),row);
  const enriched=r.differential.map(d=>enrich(d,lookup.get(d.featureId),asset));
@@ -28,7 +28,10 @@ function exportModule(wb:XLSX.WorkBook,project:Project,r:AnalysisResult,asset?:D
  add(wb,`${base+1}_${tag}_方法参数`,[flatten(r.parameters)]);add(wb,`${base+2}_${tag}_描述统计`,r.summaries);
  add(wb,`${base+3}_${tag}_全部比较`,enriched);add(wb,`${base+4}_${tag}_FDR严格显著`,enriched.filter(x=>Number(x.FDR)<.05));
  add(wb,`${base+5}_${tag}_P值探索候选`,enriched.filter(x=>Number(x.P值)<.05&&Number(x.FDR)>=.05));
- add(wb,`${base+6}_${tag}_方向逆转`,reversals(project,r,lookup,asset));if(r.pca.length)add(wb,`${base+7}_${tag}_PCA源数据`,r.pca);
+ add(wb,`${base+6}_${tag}_方向逆转`,reversals(project,r,lookup,asset));
+ add(wb,`${base+7}_${tag}_给药组间比较`,enriched.filter(x=>x.比较层级==='treatment_pairwise'));
+ add(wb,`${base+8}_${tag}_给药组间FDR显著`,enriched.filter(x=>x.比较层级==='treatment_pairwise'&&Number(x.FDR)<.05));
+ if(r.pca.length)add(wb,`${base+9}_${tag}_PCA源数据`,r.pca);
 }
 function enrich(d:DifferentialRow,raw?:Record<string,unknown>,asset?:DataAsset){
  const annotations:Record<string,unknown>={};for(const [k,v] of Object.entries(raw??{}))if(!asset?.sampleColumns.includes(k))annotations[k]=v;

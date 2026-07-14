@@ -3,7 +3,20 @@ if(length(args)<2) stop('usage: deep_analysis_runner.R input.json output.json')
 if(!requireNamespace('jsonlite',quietly=TRUE)) stop('缺少R包jsonlite')
 p <- jsonlite::fromJSON(args[1],simplifyVector=FALSE); method <- p$method
 pack <- function(method,engine,summary,tables,messages=character()) list(id=paste0('deep-',method,'-',as.integer(Sys.time())),method=method,createdAt=format(Sys.time(),'%Y-%m-%dT%H:%M:%SZ',tz='UTC'),status=if(length(messages))'warning' else 'completed',engine=engine,settings=p$settings,summary=summary,tables=tables,messages=as.list(messages))
-norm_rows <- function(x) if(is.null(x)||!length(x)) data.frame() else do.call(rbind,lapply(x,function(z)as.data.frame(z,stringsAsFactors=FALSE)))
+norm_rows <- function(x) {
+ if(is.null(x)||!length(x)) return(data.frame())
+ keys <- unique(unlist(lapply(x,names),use.names=FALSE))
+ rows <- lapply(x,function(z){
+  z <- z[keys]
+  z <- lapply(z,function(v){
+   if(is.null(v)||length(v)==0) return(NA_character_)
+   if(is.list(v)||length(v)>1) return(paste(unlist(v),collapse=';'))
+   v
+  })
+  as.data.frame(z,stringsAsFactors=FALSE,optional=TRUE)
+ })
+ out <- do.call(rbind,rows);rownames(out)<-NULL;out
+}
 species_db <- function(species){if(grepl('musculus',species,ignore.case=TRUE))'org.Mm.eg.db' else if(grepl('norvegicus',species,ignore.case=TRUE))'org.Rn.eg.db' else 'org.Hs.eg.db'}
 species_kegg <- function(species){if(grepl('musculus',species,ignore.case=TRUE))'mmu' else if(grepl('norvegicus',species,ignore.case=TRUE))'rno' else 'hsa'}
 enrich <- function(){
@@ -11,7 +24,8 @@ enrich <- function(){
  dbn<-species_db(p$meta$species);if(!requireNamespace(dbn,quietly=TRUE))stop(paste0('缺少物种注释包',dbn))
  db<-getExportedValue(dbn,dbn); rows<-norm_rows(p$results);if(!nrow(rows))stop('没有差异结果')
  rows$fdr<-as.numeric(rows$fdr);rows$log2FC<-as.numeric(rows$log2FC);ids<-unique(as.character(rows$featureId[rows$fdr<as.numeric(p$settings$fdr %||% .05)]));allids<-unique(as.character(rows$featureId))
- from<-if(all(grepl('^ENS',allids)))'ENSEMBL' else if(all(grepl('^[0-9]+$',allids)))'ENTREZID' else 'SYMBOL'
+ ids<-sub('\\.[0-9]+$','',ids);allids<-sub('\\.[0-9]+$','',allids)
+ from<-if(all(grepl('^(ENSMUSP|ENSP|ENSRNOP)',allids)))'ENSEMBLPROT' else if(all(grepl('^ENS',allids)))'ENSEMBL' else if(all(grepl('^[0-9]+$',allids)))'ENTREZID' else if(all(grepl('^[A-Z0-9]+_[A-Z]+$',allids)))'UNIPROT' else 'SYMBOL'
  conv<-clusterProfiler::bitr(ids,fromType=from,toType='ENTREZID',OrgDb=db);universe<-clusterProfiler::bitr(allids,fromType=from,toType='ENTREZID',OrgDb=db)
  if(!nrow(conv))stop('基因ID无法映射；请确认物种及ID类型')
  if(method=='go')o<-clusterProfiler::enrichGO(conv$ENTREZID,OrgDb=db,keyType='ENTREZID',ont='ALL',universe=universe$ENTREZID,pAdjustMethod='BH',readable=TRUE)

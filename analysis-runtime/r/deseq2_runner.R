@@ -22,13 +22,15 @@ dds <- tryCatch(DESeq2::DESeq(dds, quiet=TRUE), error=function(e) {
 norm <- DESeq2::counts(dds, normalized=TRUE)
 control <- args[4]; model <- args[5]; treatments <- Filter(nzchar, strsplit(args[6], ",", fixed=TRUE)[[1]])
 pairs <- list(c(control,model)); if(length(treatments)) for(x in treatments) pairs[[length(pairs)+1]] <- c(model,x)
+if(length(treatments)>=2) for(z in combn(treatments,2,simplify=FALSE)) pairs[[length(pairs)+1]] <- z
 out <- list()
 for(pair in pairs){
   ga <- pair[1]; gb <- pair[2]
   if(!all(c(ga,gb) %in% levels(samples$group))) next
   res <- as.data.frame(DESeq2::results(dds, contrast=c("group",gb,ga), independentFiltering=TRUE, alpha=.05))
   ia <- rownames(samples)[samples$group==ga]; ib <- rownames(samples)[samples$group==gb]
-  rec <- data.frame(featureId=rownames(res),label=rownames(res),comparison=paste0(gb,"_vs_",ga),comparisonScope="primary",meanA=rowMeans(norm[,ia,drop=FALSE]),meanB=rowMeans(norm[,ib,drop=FALSE]),effect=res$log2FoldChange,t=res$stat,pValue=res$pvalue,fdr=res$padj,hedgesG=NA_real_,recovery=NA_real_,baseMean=res$baseMean,lfcSE=res$lfcSE)
+  scope <- if(ga %in% treatments && gb %in% treatments) "treatment_pairwise" else "primary"
+  rec <- data.frame(featureId=rownames(res),label=rownames(res),comparison=paste0(gb,"_vs_",ga),comparisonScope=scope,meanA=rowMeans(norm[,ia,drop=FALSE]),meanB=rowMeans(norm[,ib,drop=FALSE]),effect=res$log2FoldChange,t=res$stat,pValue=res$pvalue,fdr=res$padj,hedgesG=NA_real_,recovery=NA_real_,baseMean=res$baseMean,lfcSE=res$lfcSE)
   out[[length(out)+1]] <- rec
 }
 if(!length(out)) stop("没有可运行的预设比较；请检查组名映射")

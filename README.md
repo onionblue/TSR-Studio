@@ -38,6 +38,7 @@
 - 转录组调用 R/DESeq2；仅接受非负整数 raw counts，TPM/FPKM 不会冒充 DESeq2 输入。
 - 蛋白组调用 R/limma 经验贝叶斯模型。
 - 模型组相对空白组、给药组相对模型组的方向逆转和恢复率分析。
+- 所有给药组两两直接比较，例如炮制品相对生品、处方B相对处方A或药物B相对药物A；结果单独标记为“给药组间比较”。
 - 严格显著结果与探索性候选分层保存，不用普通 t 检验伪装缺失的正式运行环境。
 
 ### 4. 深度生物信息学与机器学习
@@ -50,6 +51,8 @@
 - **机器学习共识筛选**：Elastic Net、随机森林、SVM、分层交叉验证、ROC AUC、平衡准确率、置换检验和特征重要性。
 - **集合交叠**：输出 Venn、花瓣和 UpSet 所需的严格显著集合、精确交集和全部成员。
 - **跨组学相关网络**：在共同样本上计算跨数据块相关及FDR，保留可追溯网络边。
+
+GO、KEGG和GSEA可在“深度挖掘”页面指定比较，例如选择 `CG_vs_G`，只对CG相对G的差异结果进行富集，不与其他比较混合。
 
 WGCNA 少于15个独立样本时直接阻断；15–29个样本标记为探索性。机器学习至少需要两组且每组不少于3个独立样本；总样本较小时仅用于候选排序，不能替代独立验证。
 
@@ -135,11 +138,11 @@ org.Hs.eg.db
 3. 选择 **Build Windows and macOS installers**。
 4. 点击 **Run workflow**。
 5. 构建完成后，在该次运行页面底部下载 Artifacts：
-   - `TSR-Studio-2.0.0-Windows-x64-unsigned`
-   - `TSR-Studio-2.0.0-macOS-Intel-x64-unsigned`
-   - `TSR-Studio-2.0.0-macOS-Apple-Silicon-arm64-unsigned`
+   - `TSR-Studio-2.0.2-Windows-x64-unsigned`
+   - `TSR-Studio-2.0.2-macOS-Intel-x64-unsigned`
+   - `TSR-Studio-2.0.2-macOS-Apple-Silicon-arm64-unsigned`
 
-也可以创建 `v2.0.0` 标签，工作流会同时建立 GitHub Release。
+也可以创建 `v2.0.2` 标签，工作流会同时建立 GitHub Release。
 
 ## 五、安装与首次启动
 
@@ -190,7 +193,7 @@ xattr -dr com.apple.quarantine "/Applications/TSR Studio.app"
 
 ## 八、当前版本状态
 
-版本：**2.0.0**
+版本：**2.0.2**
 
 定位：科研分析与方法验证版
 源码提交：`ac8abf2`
