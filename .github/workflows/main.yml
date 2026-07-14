@@ -19,11 +19,11 @@ jobs:
             platform: Windows-x64
             command: npx electron-builder --win nsis portable --x64 --publish never
 
-          - os: macos-14
+          - os: macos-15-intel
             platform: macOS-Intel-x64
             command: npx electron-builder --mac dmg zip --x64 --publish never
 
-          - os: macos-14-arm64
+          - os: macos-14
             platform: macOS-Apple-Silicon-arm64
             command: npx electron-builder --mac dmg zip --arm64 --publish never
 
