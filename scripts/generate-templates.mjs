@@ -1,0 +1,9 @@
+import * as XLSX from 'xlsx';
+const wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{Sample_ID:'S01',Animal_ID:'A01',Group:'Control',Sex:'F',Batch:'B1',Tissue:'Liver',Timepoint:'Endpoint',Included:true},{Sample_ID:'S02',Animal_ID:'A02',Group:'Model',Sex:'F',Batch:'B1',Tissue:'Liver',Timepoint:'Endpoint',Included:true}]),'Sample_relationship');
+XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['模块','最低字段'],['实测成分','Name, Formula, measured_mz, RT, ion_mode, adduct, MSMS_score, abundance, identification_level, sample_type'],['转录组','Gene_ID + 各Sample ID的raw counts'],['蛋白组','Protein_ID/Gene_ID + 各Sample ID的定量值'],['代谢组','Feature_ID, mz, RT, annotation + 各Sample ID峰面积'],['肠道菌群','Taxon/ASV_ID + 各Sample ID丰度'],['SCFA','Sample_ID, Analyte, Peak_area/Concentration, Unit, Internal_standard'],['药效表型','Sample_ID/Animal_ID + 各项原始测量值']]),'Module_dictionary');
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{Gene_ID:'GeneA',S01:120,S02:130,S03:110,S04:350,S05:370,S06:330},{Gene_ID:'GeneB',S01:260,S02:250,S03:270,S04:90,S05:100,S06:80}]),'Transcript_counts_example');
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{Sample_ID:'S01',SPT:78.2,SOD:135.4,MDA:2.1},{Sample_ID:'S02',SPT:76.8,SOD:132.7,MDA:2.3},{Sample_ID:'S03',SPT:79.1,SOD:138.0,MDA:2.0},{Sample_ID:'S04',SPT:42.3,SOD:79.4,MDA:5.8},{Sample_ID:'S05',SPT:40.9,SOD:82.1,MDA:5.5},{Sample_ID:'S06',SPT:43.7,SOD:77.9,MDA:6.0}]),'Phenotype_example');
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{Protein_ID:'P001',S01:120000,S02:110000,S03:300000,S04:310000},{Protein_ID:'P002',S01:200000,S02:190000,S03:80000,S04:90000}]),'Protein_matrix_example');
+XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{Taxon:'Lachnospiraceae',S01:0.12,S02:0.10,S03:0.03,S04:0.02},{Taxon:'Bacteroides',S01:0.08,S02:0.09,S03:0.18,S04:0.20}]),'Microbiome_example');
+XLSX.writeFile(wb,'TSR_Studio_0.3_Data_Templates.xlsx');

@@ -1,0 +1,68 @@
+{
+  "name": "tsr-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "desktop": "electron .",
+    "desktop:dev": "concurrently \"vite\" \"wait-on http://127.0.0.1:5174 && electron .\"",
+    "pack:win": "npm run build && electron-builder --win nsis portable",
+    "pack:mac": "npm run build && electron-builder --mac dmg zip",
+    "deploy:r:mac": "bash scripts/deploy-r-macos.sh",
+    "deploy:r:win": "powershell -ExecutionPolicy Bypass -File scripts/deploy-r-windows.ps1",
+    "templates": "node scripts/generate-templates.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "jstat": "latest",
+    "jszip": "^3.10.1",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "xlsx": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "concurrently": "latest",
+    "electron": "latest",
+    "electron-builder": "latest",
+    "wait-on": "latest"
+  },
+  "build": {
+    "appId": "edu.hebcm.tsrstudio",
+    "productName": "TSR Studio",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "analysis-runtime/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "artifactName": "TSR-Studio-${version}-Windows-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.education",
+      "artifactName": "TSR-Studio-${version}-macOS-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

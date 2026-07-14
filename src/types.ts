@@ -1,0 +1,17 @@
+export type ModuleKey='chemistry'|'transcriptomics'|'proteomics'|'metabolomics'|'microbiome'|'scfa'|'phenotype';
+export interface ProjectMeta{name:string;mode:'RESEARCH'|'PUBLIC_VALIDATION'|'DEMO';species:string;disease:string;controlGroup:string;modelGroup:string;treatmentGroups:string[]}
+export interface Sample{id:string;group:string;animalId:string;sex:string;batch:string;tissue:string;timepoint:string;included:boolean}
+export interface DataAsset{id:string;module:ModuleKey;fileName:string;importedAt:string;rows:number;columns:number;sampleColumns:string[];missingRate:number;status:'ready'|'warning'|'blocked';messages:string[];data:Record<string,unknown>[];sourceFormat?:string}
+export interface DifferentialRow{featureId:string;label:string;comparison:string;comparisonScope?:string;meanA:number;meanB:number;log2FC:number;t:number;df:number;pValue:number;fdr:number;effectSize:number;recovery?:number;flags:string[]}
+export interface SummaryRow{feature:string;group:string;n:number;mean:number;sd:number;median:number;q1:number;q3:number;min:number;max:number}
+export interface PcaPoint{sampleId:string;group:string;pc1:number;pc2:number}
+export interface AnalysisResult{id:string;module:ModuleKey;createdAt:string;engineVersion:string;status:'completed'|'warning'|'failed';parameters:Record<string,unknown>;qc:Record<string,unknown>;summaries:SummaryRow[];differential:DifferentialRow[];pca:PcaPoint[];messages:string[]}
+export interface CompoundCandidate{id:string;name:string;cas?:string;pubchemCid?:string;smiles?:string;source:string;identityLevel:string;abundance?:number;exposure?:number;score:number;flags:string[]}
+export interface TargetCandidate{id:string;symbol:string;modules:string[];modelFdr:number;treatmentFdr:number;modelEffect:number;treatmentEffect:number;reversal:boolean;crossOmics:number;diseaseScore?:number;noveltyScore?:number;score:number;evidence:string[]}
+export interface DockingRun{id:string;createdAt:string;compoundId:string;targetId:string;receptor:string;ligand:string;engine:string;parameters:Record<string,number>;scores:{mode:number;affinity:number;rmsdLower:number;rmsdUpper:number}[];poseFile?:string;log:string;status:'completed'|'failed'}
+export interface MDSeries{name:string;unitX:string;unitY:string;points:{x:number;y:number}[];sourceFile:string}
+export interface MDRun{id:string;createdAt:string;compoundId:string;targetId:string;engine:string;trajectory:string;topology:string;durationNs?:number;series:MDSeries[];outputDirectory?:string;log:string;status:'completed'|'failed'}
+export interface DiseaseTargetEvidence{targetId:string;symbol:string;name:string;associationScore:number;source:string;queriedAt:string;diseaseId:string;diseaseName:string}
+export interface CompoundTargetPair{compoundId:string;compoundName:string;targetId:string;targetSymbol:string;score:number;evidence:string[];dockingAffinity?:number}
+export interface DiscoveryState{compounds:CompoundCandidate[];targets:TargetCandidate[];pairs:CompoundTargetPair[];diseaseEvidence:DiseaseTargetEvidence[];docking:DockingRun[];md:MDRun[];diseaseEvidenceUpdatedAt?:string;warnings:string[]}
+export interface Project{schema:'TSR_STUDIO_0.6';meta:ProjectMeta;samples:Sample[];assets:DataAsset[];results:AnalysisResult[];discovery?:DiscoveryState;createdAt:string;updatedAt:string}

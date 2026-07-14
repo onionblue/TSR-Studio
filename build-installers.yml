@@ -1,0 +1,64 @@
+name: Build Windows and macOS installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: Windows-x64
+            command: npx electron-builder --win nsis portable --x64
+          - os: macos-14
+            platform: macOS-Intel-x64
+            command: npx electron-builder --mac dmg zip --x64
+          - os: macos-14-arm64
+            platform: macOS-Apple-Silicon-arm64
+            command: npx electron-builder --mac dmg zip --arm64
+    runs-on: ${{ matrix.os }}
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build application
+        run: npm run build
+      - name: Build installer
+        run: ${{ matrix.command }}
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TSR-Studio-1.0-${{ matrix.platform }}-unsigned
+          path: release/*
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" installers/**/* --generate-notes --title "TSR Studio ${GITHUB_REF_NAME}"

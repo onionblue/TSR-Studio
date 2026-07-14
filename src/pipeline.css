@@ -1,0 +1,4 @@
+.pathPick{display:grid;grid-template-columns:1fr auto;gap:6px}
+.clip{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+section+section{margin-top:16px}
+section h3{margin:24px 0 4px;color:#314e63}

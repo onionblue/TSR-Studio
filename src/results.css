@@ -1,0 +1,1 @@
+.resultCards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.resultCards article{border:1px solid #dce4ea;padding:16px}.resultCards h3{margin:0 0 8px}.resultCards p,.resultCards small{color:#65798a}.resultCards small{font-size:11px}@media(max-width:1000px){.resultCards{grid-template-columns:1fr}}

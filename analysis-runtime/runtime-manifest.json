@@ -1,0 +1,15 @@
+{
+  "studioVersion": "1.0.0",
+  "runtimePolicy": "native-system-runtime-with-strict_dependency_blocking",
+  "desktopArtifacts": "unsigned-research-builds_require_native_validation",
+  "schema":"TSR_RUNTIME_0.1",
+  "python":{"required":">=3.11","bundled":false,"status":"implemented_system_runtime"},
+  "r":{"required":">=4.3","bundled":false,"status":"DESeq2_and_limma_desktop_routes_implemented_external_runtime_required"},
+  "engines":[
+    {"id":"local_basic_stats","backend":"JavaScript","packages":["jstat"],"status":"implemented","scope":"Welch t-test, BH-FDR, effect size, recovery, CPM/log2CPM, PCA"},
+    {"id":"transcriptomics_de","backend":"R","packages":["DESeq2"],"status":"implemented_native_validation_required"},
+    {"id":"proteomics_stats","backend":"R","packages":["limma"],"status":"implemented_native_validation_required"},
+    {"id":"metabolomics_qc","backend":"Python","packages":["pandas","scipy","scikit-learn"],"status":"matrix_beta_implemented_qc_rlsc_pending"},
+    {"id":"microbiome_compositional","backend":"R","packages":["ANCOMBC","ALDEx2","vegan"],"status":"planned"}
+  ]
+}
