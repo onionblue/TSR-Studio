@@ -1,6 +1,6 @@
 {
   "name": "tsr-studio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -39,8 +39,10 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "analysis-runtime/**/*",
       "package.json"
+    ],
+    "extraResources": [
+      { "from": "analysis-runtime", "to": "analysis-runtime" }
     ],
     "directories": {
       "output": "release"
@@ -53,6 +55,7 @@
       "artifactName": "TSR-Studio-${version}-Windows-${arch}.${ext}"
     },
     "mac": {
+      "identity": null,
       "target": [
         "dmg",
         "zip"
@@ -60,6 +63,7 @@
       "category": "public.app-category.education",
       "artifactName": "TSR-Studio-${version}-macOS-${arch}.${ext}"
     },
+    "afterPack": "scripts/afterPack.cjs",
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
