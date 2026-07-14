@@ -13,6 +13,10 @@ export function exportResults(project:Project){
  add(wb,'85_动力学运行',discovery.md.map(x=>({Run_ID:x.id,成分:x.compoundId,靶标:x.targetId,引擎:x.engine,拓扑:x.topology,轨迹:x.trajectory,输出目录:x.outputDirectory,曲线:x.series.map(s=>s.name).join('；'),状态:x.status,时间:x.createdAt})));
  add(wb,'86_动力学全部时间序列',discovery.md.flatMap(x=>x.series.flatMap(s=>s.points.map(p=>({Run_ID:x.id,成分:x.compoundId,靶标:x.targetId,指标:s.name,X:p.x,Y:p.y,X单位:s.unitX,Y单位:s.unitY,源文件:s.sourceFile})))));
  add(wb,'87_疾病靶点证据',discovery.diseaseEvidence);add(wb,'88_发现流程限制',discovery.warnings.map(x=>({限制:x,疾病证据更新时间:discovery.diseaseEvidenceUpdatedAt??'未同步'})));
+ for(const [i,run] of (project.deepAnalysis?.runs??[]).entries()){
+  add(wb,`${90+i*4}_${shortDeep(run.method)}_说明`,[{方法:run.method,状态:run.status,引擎:run.engine,运行时间:run.createdAt,参数:JSON.stringify(run.settings),摘要:JSON.stringify(run.summary),提示:run.messages.join('；')}]);
+  Object.entries(run.tables).forEach(([name,rows],j)=>add(wb,`${91+i*4+j}_${shortDeep(run.method)}_${name}`,rows));
+ }
  XLSX.writeFile(wb,`${safe(project.meta.name)}_TSR_Studio_Complete_Results.xlsx`);
 }
 function exportModule(wb:XLSX.WorkBook,project:Project,r:AnalysisResult,asset?:DataAsset){
@@ -41,4 +45,5 @@ function annotation(raw?:Record<string,unknown>,asset?:DataAsset){const x:Record
 function flatten(x:Record<string,unknown>){return Object.fromEntries(Object.entries(x).map(([k,v])=>[k,typeof v==='object'?JSON.stringify(v):v]))}
 function add(wb:XLSX.WorkBook,name:string,rows:object[]){const ws=XLSX.utils.json_to_sheet(rows.length?rows:[{提示:'无符合条件的结果；请查看全量结果表'}]);ws['!autofilter']={ref:ws['!ref']??'A1'};ws['!freeze']={xSplit:0,ySplit:1};ws['!cols']=Array.from({length:Math.min(80,Object.keys(rows[0]??{}).length)},(_,i)=>({wch:i<4?22:16}));XLSX.utils.book_append_sheet(wb,ws,name.slice(0,31))}
 const short=(s:string)=>({proteomics:'蛋白组',phenotype:'行为学',metabolomics:'代谢组',microbiome:'菌群',scfa:'短链脂肪酸',chemistry:'化学成分',transcriptomics:'转录组'}[s]??s);
+const shortDeep=(s:string)=>({go:'GO',kegg:'KEGG',gsea:'GSEA',wgcna:'WGCNA',correlation:'表型相关',machine_learning:'机器学习',overlap:'集合交叠',multiomics:'跨组学'}[s]??s);
 const safe=(s:string)=>s.replace(/[\\/:*?"<>|\s]+/g,'_');

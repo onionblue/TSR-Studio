@@ -1,15 +1,19 @@
 {
-  "studioVersion": "1.0.2",
+  "studioVersion": "2.0.0",
   "runtimePolicy": "system_runtime_with_explicit_path_detection_and_strict_dependency_blocking",
   "desktopArtifacts": "unsigned-research-builds_require_native_validation",
   "schema":"TSR_RUNTIME_0.1",
   "python":{"required":">=3.11","bundled":false,"packages":["pandas","scipy","scikit-learn"],"status":"system_install_required"},
-  "r":{"required":">=4.3","bundled":false,"packages":["DESeq2","limma","edgeR"],"status":"macOS_setup_helper_included"},
+  "r":{"required":">=4.3","bundled":false,"packages":["DESeq2","limma","edgeR","jsonlite","WGCNA","clusterProfiler","org.Mm.eg.db","org.Rn.eg.db","org.Hs.eg.db"],"status":"system_install_required_setup_helper_included"},
   "engines":[
     {"id":"local_basic_stats","backend":"JavaScript","packages":["jstat"],"status":"implemented","scope":"Welch t-test, BH-FDR, effect size, recovery, CPM/log2CPM, PCA"},
     {"id":"transcriptomics_de","backend":"R","packages":["DESeq2"],"status":"implemented_native_validation_required"},
     {"id":"proteomics_stats","backend":"R","packages":["limma"],"status":"implemented_native_validation_required"},
     {"id":"metabolomics_qc","backend":"Python","packages":["pandas","scipy","scikit-learn"],"status":"matrix_beta_implemented_qc_rlsc_pending"},
-    {"id":"microbiome_compositional","backend":"R","packages":["ANCOMBC","ALDEx2","vegan"],"status":"planned"}
+    {"id":"deep_enrichment","backend":"R","packages":["clusterProfiler","org.Mm.eg.db","org.Rn.eg.db","org.Hs.eg.db"],"status":"implemented_native_validation_required"},
+    {"id":"wgcna","backend":"R","packages":["WGCNA"],"status":"implemented_exploratory_below_30_samples"},
+    {"id":"machine_learning","backend":"Python","packages":["scikit-learn"],"status":"implemented_cross_validation_and_permutation_test"},
+    {"id":"cross_omics","backend":"Python","packages":["pandas","scipy"],"status":"implemented_correlation_network"},
+    {"id":"microbiome_compositional","backend":"R","packages":["ANCOMBC","ALDEx2","vegan"],"status":"planned_not_claimed"}
   ]
 }

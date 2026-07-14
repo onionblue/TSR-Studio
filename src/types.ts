@@ -14,4 +14,7 @@ export interface MDRun{id:string;createdAt:string;compoundId:string;targetId:str
 export interface DiseaseTargetEvidence{targetId:string;symbol:string;name:string;associationScore:number;source:string;queriedAt:string;diseaseId:string;diseaseName:string}
 export interface CompoundTargetPair{compoundId:string;compoundName:string;targetId:string;targetSymbol:string;score:number;evidence:string[];dockingAffinity?:number}
 export interface DiscoveryState{compounds:CompoundCandidate[];targets:TargetCandidate[];pairs:CompoundTargetPair[];diseaseEvidence:DiseaseTargetEvidence[];docking:DockingRun[];md:MDRun[];diseaseEvidenceUpdatedAt?:string;warnings:string[]}
-export interface Project{schema:'TSR_STUDIO_0.6';meta:ProjectMeta;samples:Sample[];assets:DataAsset[];results:AnalysisResult[];discovery?:DiscoveryState;createdAt:string;updatedAt:string}
+export type DeepMethod='go'|'kegg'|'gsea'|'wgcna'|'correlation'|'machine_learning'|'overlap'|'multiomics';
+export interface DeepAnalysisRun{id:string;method:DeepMethod;createdAt:string;status:'completed'|'warning'|'failed';engine:string;settings:Record<string,unknown>;summary:Record<string,unknown>;tables:Record<string,Record<string,unknown>[]>;messages:string[]}
+export interface DeepAnalysisState{selectedModules:ModuleKey[];selectedIndicators:string[];runs:DeepAnalysisRun[]}
+export interface Project{schema:'TSR_STUDIO_0.6';meta:ProjectMeta;samples:Sample[];assets:DataAsset[];results:AnalysisResult[];discovery?:DiscoveryState;deepAnalysis?:DeepAnalysisState;createdAt:string;updatedAt:string}
