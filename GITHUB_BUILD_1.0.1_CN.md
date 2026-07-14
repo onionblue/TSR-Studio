@@ -11,4 +11,4 @@
 
 不要再运行旧的`Build Windows and macOS installers`工作流；旧流程不会内置R和Python。
 
-安装后先进入“分析任务”，点击“检测运行环境”。只有R显示`bundled:true`、`dependencies:true`，Python显示`available:true`时，才运行正式分析。
+安装后先进入“分析任务”，点击“检测运行环境”。R显示`available:true`、`dependencies:true`后才运行转录组/蛋白组分析。若macOS显示R不可用，点击“安装/修复macOS R环境”，完成后完全退出并重新打开应用再检测。

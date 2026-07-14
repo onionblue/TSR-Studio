@@ -1,10 +1,10 @@
 {
-  "studioVersion": "1.0.1",
-  "runtimePolicy": "bundled_R_with_strict_dependency_blocking",
+  "studioVersion": "1.0.2",
+  "runtimePolicy": "system_runtime_with_explicit_path_detection_and_strict_dependency_blocking",
   "desktopArtifacts": "unsigned-research-builds_require_native_validation",
   "schema":"TSR_RUNTIME_0.1",
-  "python":{"required":">=3.11","bundled":true,"packages":["pandas","scipy","scikit-learn"],"status":"bundled_by_release_workflow"},
-  "r":{"required":">=4.3","bundled":true,"packages":["DESeq2","limma","edgeR"],"status":"bundled_by_release_workflow"},
+  "python":{"required":">=3.11","bundled":false,"packages":["pandas","scipy","scikit-learn"],"status":"system_install_required"},
+  "r":{"required":">=4.3","bundled":false,"packages":["DESeq2","limma","edgeR"],"status":"macOS_setup_helper_included"},
   "engines":[
     {"id":"local_basic_stats","backend":"JavaScript","packages":["jstat"],"status":"implemented","scope":"Welch t-test, BH-FDR, effect size, recovery, CPM/log2CPM, PCA"},
     {"id":"transcriptomics_de","backend":"R","packages":["DESeq2"],"status":"implemented_native_validation_required"},

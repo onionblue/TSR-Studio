@@ -1,6 +1,6 @@
 {
   "name": "tsr-studio",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -42,7 +42,8 @@
       "package.json"
     ],
     "extraResources": [
-      { "from": "analysis-runtime", "to": "analysis-runtime" }
+      { "from": "analysis-runtime", "to": "analysis-runtime" },
+      { "from": "scripts/Install_TSR_R_Runtime_macOS.command", "to": "Install_TSR_R_Runtime_macOS.command" }
     ],
     "directories": {
       "output": "release"

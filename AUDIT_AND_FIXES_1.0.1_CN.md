@@ -11,20 +11,21 @@
 7. Vina与GROMACS没有内置；相关页面只是外部程序调用入口，不应描述为完整离线能力。
 8. PubChem与Open Targets功能依赖网络，不属于离线功能。
 
-## 1.0.1修复
+## 1.0.2修复
 
-1. R、Python和分析脚本通过`extraResources`放置于应用真实资源目录，不再封入ASAR。
-2. 新增完整构建工作流：在对应架构运行器上安装并复制R 4.4、DESeq2、limma、edgeR、Python 3.11、pandas、SciPy和scikit-learn。
-3. macOS使用GitHub官方`macos-14` Apple Silicon运行器，避免Intel运行时混入ARM64应用。
-4. 启动检测同时验证运行时和正式统计依赖。
-5. 后端失败时停留在任务页，不生成、不保存、不导出“0条结果”。
-6. 构建后执行临时ad-hoc签名及`codesign --verify`；正式免提示分发仍需Developer ID及Apple公证。
-7. 构建任务检查安装目录内确实存在Rscript，缺失则构建失败，不上传伪离线安装包。
+1. 分析脚本通过`extraResources`放置于应用真实资源目录，不再封入ASAR。
+2. macOS除命令名外，明确检测官方R Framework、Homebrew ARM64和Intel路径；Windows检测常见R安装目录。
+3. Python同样检测应用资源、Homebrew、`/usr/local`和系统路径。
+4. 启动检测同时验证运行时和正式统计依赖，并返回每个候选路径的诊断结果。
+5. 应用内新增“安装/修复macOS R环境”按钮，启动随安装包附带的官方CRAN R及Bioconductor依赖安装器。
+6. 后端失败时停留在任务页，不生成、不保存、不导出“0条结果”。
+7. 构建后执行临时ad-hoc签名及`codesign --verify`；正式免提示分发仍需Developer ID及Apple公证。
+8. 运行时清单不再虚报“已内置R/Python”。
 
 ## 能力边界
 
-- 转录组与蛋白组：完整包内置R核心统计环境。
-- 代谢组等Python模块：完整包内置Python科学计算环境。
+- 转录组与蛋白组：需要本机R及DESeq2/limma/edgeR；macOS安装包提供一键安装/修复入口。
+- 代谢组等Python模块：需要本机Python及pandas/SciPy/scikit-learn，当前不宣称离线内置。
 - 分子对接与分子动力学：仍需另行封装Vina/GROMACS，1.0.1不冒充已内置。
 - PubChem/Open Targets：需要网络。
 - 未使用Apple Developer ID的构建：首次打开仍可能需要右键“打开”或移除隔离属性。

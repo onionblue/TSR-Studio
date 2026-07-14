@@ -44,7 +44,7 @@ jobs:
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TSR-Studio-1.0-${{ matrix.platform }}-unsigned
+          name: TSR-Studio-1.0.2-${{ matrix.platform }}-unsigned
           path: release/*
           if-no-files-found: error
           retention-days: 30
