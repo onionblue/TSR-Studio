@@ -138,11 +138,11 @@ org.Hs.eg.db
 3. 选择 **Build Windows and macOS installers**。
 4. 点击 **Run workflow**。
 5. 构建完成后，在该次运行页面底部下载 Artifacts：
-   - `TSR-Studio-2.0.2-Windows-x64-unsigned`
-   - `TSR-Studio-2.0.2-macOS-Intel-x64-unsigned`
-   - `TSR-Studio-2.0.2-macOS-Apple-Silicon-arm64-unsigned`
+   - `TSR-Studio-2.1.0-Windows-x64-unsigned`
+   - `TSR-Studio-2.1.0-macOS-Intel-x64-unsigned`
+   - `TSR-Studio-2.1.0-macOS-Apple-Silicon-arm64-unsigned`
 
-也可以创建 `v2.0.2` 标签，工作流会同时建立 GitHub Release。
+也可以创建 `v2.1.0` 标签，工作流会同时建立 GitHub Release。
 
 ## 五、安装与首次启动
 
@@ -193,7 +193,7 @@ xattr -dr com.apple.quarantine "/Applications/TSR Studio.app"
 
 ## 八、当前版本状态
 
-版本：**2.0.2**
+版本：**2.1.0**
 
 定位：科研分析与方法验证版
 源码提交：`ac8abf2`
