@@ -1,5 +1,5 @@
 {
-  "studioVersion": "2.1.0",
+  "studioVersion": "2.1.1",
   "runtimePolicy": "system_runtime_with_explicit_path_detection_and_strict_dependency_blocking",
   "desktopArtifacts": "unsigned-research-builds_require_native_validation",
   "schema":"TSR_RUNTIME_0.1",
