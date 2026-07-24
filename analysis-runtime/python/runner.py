@@ -42,15 +42,29 @@ def pairs(feature,by,meta,all_pairwise=False):
 def individual(payload):
     data=pd.DataFrame(payload['asset']['data']);smap=samples_map(payload);validate_groups(payload,smap);sid=next((x for x in ['Sample_ID','sample_id','Sample','sample'] if x in data.columns),None)
     if not sid: raise ValueError('需要Sample_ID列')
-    data=data[data[sid].astype(str).isin(smap)].copy();numeric=[c for c in data.columns if c!=sid and pd.to_numeric(data[c],errors='coerce').notna().sum()>=2];summ=[];diff=[]
+    data=data[data[sid].astype(str).isin(smap)].copy();numeric=[c for c in data.columns if c!=sid and pd.to_numeric(data[c],errors='coerce').notna().sum()>=2];summ=[];diff=[];omnibus=[]
     for col in numeric:
         data[col]=pd.to_numeric(data[col],errors='coerce');by={}
         for _,r in data.iterrows():
             g=smap[str(r[sid])]['group'];v=r[col]
             if pd.notna(v):by.setdefault(g,[]).append(float(v))
         for g,x in by.items():summ.append({'feature':col,'group':g,'n':len(x),'mean':float(np.mean(x)),'sd':float(np.std(x,ddof=1)) if len(x)>1 else None,'median':float(np.median(x))})
-        diff+=pairs(col,by,payload['meta'])
-    add_fdr(diff);return {'engine':'Python scipy 0.3','module':payload['asset']['module'],'status':'completed','qc':{'matchedSamples':len(data),'numericFeatures':len(numeric)},'summaries':summ,'differential':diff,'pca':[],'messages':[]}
+        values=[np.asarray(x,float) for x in by.values() if len(x)>=2];method='not_tested';op=1.0
+        if len(values)>=2:
+            normal=all(len(x)>=3 and np.std(x)>0 and stats.shapiro(x).pvalue>=.05 for x in values);equal=all(np.std(x)>0 for x in values) and stats.levene(*values).pvalue>=.05
+            try:
+                if normal and equal: method='one-way ANOVA';op=float(stats.f_oneway(*values).pvalue)
+                elif len(set(np.concatenate(values)))>1: method='Kruskal-Wallis';op=float(stats.kruskal(*values).pvalue)
+                else: method='constant / not testable';op=1.0
+            except Exception: method='not testable';op=1.0
+        omnibus.append({'feature':col,'method':method,'pValue':op})
+        rows= pairs(col,by,payload['meta'])
+        for x in rows:x['omnibusMethod']=method;x['omnibusPValue']=op
+        diff+=rows
+    oq=bh([x['pValue'] for x in omnibus]) if omnibus else []
+    qmap={x['feature']:q for x,q in zip(omnibus,oq)}
+    for x in diff:x['omnibusFdr']=qmap.get(x['featureId'],1.0)
+    add_fdr(diff);return {'engine':'Python scipy 0.5','module':payload['asset']['module'],'status':'completed','qc':{'matchedSamples':len(data),'numericFeatures':len(numeric),'omnibusTests':omnibus},'summaries':summ,'differential':diff,'pca':[],'messages':['总体组间检验按正态性与方差齐性在单因素ANOVA和Kruskal-Wallis之间选择；两两比较使用Welch检验并校正FDR']}
 def matrix(payload):
     data=pd.DataFrame(payload['asset']['data']);smap=samples_map(payload);validate_groups(payload,smap);sample_cols=[c for c in data.columns if c in smap];id_col=next((x for x in ['Gene_ID','Protein_ID','Protein','Feature_ID','Taxon','ASV_ID','ID','id','Name'] if x in data.columns),data.columns[0]);X=data[sample_cols].apply(pd.to_numeric,errors='coerce');module=payload['asset']['module'];messages=[]
     missing=X.isna().mean(axis=1);keep=missing<=float(payload.get('parameters',{}).get('maxMissing',0.5));data=data.loc[keep].reset_index(drop=True);X=X.loc[keep].reset_index(drop=True)

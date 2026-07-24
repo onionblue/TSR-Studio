@@ -7,7 +7,7 @@ export function exportResults(project:Project){
  const gate=publicationGate(project);add(wb,'03_发表就绪总览',[{状态:gate.status,评分:gate.score,阻断项:gate.blocks,警告项:gate.warnings,通过项:gate.passes,生成时间:gate.generatedAt,声明:'软件检查通过不等同于期刊接收或科学结论确证'}]);add(wb,'04_发表就绪明细',gate.items);
  project.assets.forEach((a,i)=>add(wb,`${10+i}_${short(a.module)}_原始导入`,a.data));
  for(const result of project.results)exportModule(wb,project,result,project.assets.find(a=>a.module===result.module));
- const discovery=buildDiscovery(project);add(wb,'80_候选活性成分',discovery.compounds.map(x=>({...x,flags:x.flags.join('；')})));add(wb,'81_候选活性靶标',discovery.targets.map(x=>({...x,modules:x.modules.join('；'),evidence:x.evidence.join('；')})));add(wb,'82_成分靶标证据对',discovery.pairs.map(x=>({...x,evidence:x.evidence.join('；')})));
+ const discovery=buildDiscovery(project);add(wb,'80_候选活性成分',discovery.compounds.map(x=>({...x,flags:x.flags.join('；')})));add(wb,'81_候选活性靶标',discovery.targets.map(x=>({...x,modules:x.modules.join('；'),evidenceComponents:JSON.stringify(x.evidenceComponents),evidence:x.evidence.join('；')})));add(wb,'82_成分靶标证据对',discovery.pairs.map(x=>({...x,evidence:x.evidence.join('；')})));
  add(wb,'83_分子对接运行',discovery.docking.map(x=>({Run_ID:x.id,成分:x.compoundId,靶标:x.targetId,引擎:x.engine,受体:x.receptor,配体:x.ligand,构象文件:x.poseFile,最佳亲和力:x.scores[0]?.affinity,构象数:x.scores.length,参数:JSON.stringify(x.parameters),状态:x.status,时间:x.createdAt})));
  add(wb,'84_分子对接全部构象',discovery.docking.flatMap(x=>x.scores.map(s=>({Run_ID:x.id,成分:x.compoundId,靶标:x.targetId,...s}))));
  add(wb,'85_动力学运行',discovery.md.map(x=>({Run_ID:x.id,成分:x.compoundId,靶标:x.targetId,引擎:x.engine,拓扑:x.topology,轨迹:x.trajectory,输出目录:x.outputDirectory,曲线:x.series.map(s=>s.name).join('；'),状态:x.status,时间:x.createdAt})));
@@ -37,7 +37,7 @@ function enrich(d:DifferentialRow,raw?:Record<string,unknown>,asset?:DataAsset){
  const annotations:Record<string,unknown>={};for(const [k,v] of Object.entries(raw??{}))if(!asset?.sampleColumns.includes(k))annotations[k]=v;
  const level=d.fdr<.05?'严格显著(FDR<0.05)':d.pValue<.05?'探索性(P<0.05,FDR未通过)':Math.abs(d.effectSize)>=.8?'大效应趋势':'未达到候选阈值';
  const zeros=raw&&asset?asset.sampleColumns.filter(c=>Number(raw[c])===0).length:0;
- return {Feature_ID:d.featureId,...annotations,比较:d.comparison,比较层级:d.comparisonScope??'primary',均值_A:d.meanA,均值_B:d.meanB,差值_log2FC:d.log2FC,t值:d.t,P值:d.pValue,FDR:d.fdr,Hedges_g:d.effectSize,恢复率:d.recovery,证据等级:level,零值样本数:zeros,质量提示:zeros?'含零值，需检查检出限/缺失机制':'',筛选说明:level==='未达到候选阈值'?'保留在全量表；未进入重点候选表':''};
+ return {Feature_ID:d.featureId,...annotations,比较:d.comparison,比较方向:'组B_vs_组A；效应=组B-组A',比较层级:d.comparisonScope??'primary',均值_A:d.meanA,均值_B:d.meanB,差值_log2FC:d.log2FC,t值:d.t,P值:d.pValue,FDR:d.fdr,Hedges_g:d.effectSize,总体检验方法:d.omnibusMethod,总体检验P值:d.omnibusPValue,总体检验FDR:d.omnibusFdr,恢复率:d.recovery,证据等级:level,零值样本数:zeros,质量提示:zeros?'含零值，需检查检出限/缺失机制':'',筛选说明:level==='未达到候选阈值'?'保留在全量表；未进入重点候选表':''};
 }
 function reversals(project:Project,r:AnalysisResult,lookup:Map<string,Record<string,unknown>>,asset?:DataAsset){
  const by=new Map<string,Map<string,DifferentialRow>>();for(const d of r.differential){if(!by.has(d.featureId))by.set(d.featureId,new Map());by.get(d.featureId)!.set(d.comparison,d)}

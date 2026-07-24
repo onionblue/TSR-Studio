@@ -6,8 +6,15 @@ samples <- read.csv(args[2], row.names=1, check.names=FALSE, stringsAsFactors=TR
 if (!all(colnames(counts) %in% rownames(samples))) stop("counts样本列与样本表不一致")
 samples <- samples[colnames(counts),,drop=FALSE]
 samples$group <- factor(samples$group)
+candidate_covariates <- intersect(c('batch','sex','tissue','timepoint'),colnames(samples))
+covariates <- candidate_covariates[vapply(candidate_covariates,function(z){v<-as.character(samples[[z]]);length(unique(v[nzchar(v)]))>1},logical(1))]
+for(z in covariates)samples[[z]]<-factor(samples[[z]])
+formula_text <- paste('~',paste(c(covariates,'group'),collapse=' + '))
+design_formula <- as.formula(formula_text)
+design_matrix <- model.matrix(design_formula,data=samples)
+if(qr(design_matrix)$rank<ncol(design_matrix))stop(paste0('设计矩阵不满秩：组别与批次/协变量完全混杂。模型=',formula_text))
 if (any(counts < 0, na.rm=TRUE) || any(abs(counts-round(counts)) > 1e-8, na.rm=TRUE)) stop("DESeq2仅接受非负整数raw counts")
-dds <- DESeq2::DESeqDataSetFromMatrix(round(as.matrix(counts)), samples, design=~group)
+dds <- DESeq2::DESeqDataSetFromMatrix(round(as.matrix(counts)), samples, design=design_formula)
 keep <- rowSums(DESeq2::counts(dds) >= 10) >= max(2, floor(ncol(dds)*0.25))
 dds <- dds[keep,]
 if (nrow(dds) < 2) stop("低计数过滤后特征不足")
@@ -30,7 +37,7 @@ for(pair in pairs){
   res <- as.data.frame(DESeq2::results(dds, contrast=c("group",gb,ga), independentFiltering=TRUE, alpha=.05))
   ia <- rownames(samples)[samples$group==ga]; ib <- rownames(samples)[samples$group==gb]
   scope <- if(ga %in% treatments && gb %in% treatments) "treatment_pairwise" else "primary"
-  rec <- data.frame(featureId=rownames(res),label=rownames(res),comparison=paste0(gb,"_vs_",ga),comparisonScope=scope,meanA=rowMeans(norm[,ia,drop=FALSE]),meanB=rowMeans(norm[,ib,drop=FALSE]),effect=res$log2FoldChange,t=res$stat,pValue=res$pvalue,fdr=res$padj,hedgesG=NA_real_,recovery=NA_real_,baseMean=res$baseMean,lfcSE=res$lfcSE)
+  rec <- data.frame(featureId=rownames(res),label=rownames(res),comparison=paste0(gb,"_vs_",ga),comparisonScope=scope,meanA=rowMeans(norm[,ia,drop=FALSE]),meanB=rowMeans(norm[,ib,drop=FALSE]),effect=res$log2FoldChange,t=res$stat,pValue=res$pvalue,fdr=res$padj,hedgesG=NA_real_,recovery=NA_real_,baseMean=res$baseMean,lfcSE=res$lfcSE,designFormula=formula_text,covariates=paste(covariates,collapse=';'))
   out[[length(out)+1]] <- rec
 }
 if(!length(out)) stop("没有可运行的预设比较；请检查组名映射")

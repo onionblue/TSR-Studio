@@ -1,0 +1,169 @@
+{
+  "studioVersion": "3.0.2",
+  "createdAt": "2026-07-22T00:30:36.947Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "checks": [
+    {
+      "name": "demo analysis executed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "model comparison exists",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "treatment comparison exists",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "treatment pairwise comparison exists",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "A_vs_B direction: numerator minus reference",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all differential rows have FDR",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phenotype analysis executed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "phenotype omnibus test retained",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "constant phenotype does not crash",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "figure package validates PNG and SVG",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "network uses adaptive canvas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "comparison definition present in captions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "GO/KEGG mapping report exported",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "low mapping blocks formal enrichment",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "WGCNA full result set",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "covariates enter formal models",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "target evidence grades implemented",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "analysis templates implemented",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "MOFA2 formal runner present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "DIABLO formal runner present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "consensus WGCNA runner present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nested CV and independent validation present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "explainability and optional XGBoost present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "3.0 cross-platform dependency installers",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "3.0.2 in-app R dependency manager",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "R packages use writable per-user library",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "nested CV acceptance run executed",
+      "ok": true,
+      "detail": " 'penalty' was deprecated in version 1.8 and will be removed in 1.10. To avoid this warning, leave 'penalty' set to its default value and use 'l1_ratio' or 'C' instead. Use l1_ratio=0 instead of penalty='l2', l1_ratio=1 instead of penalty='l1', and C=np.inf instead of penalty=None.\n  warnings.warn(\n"
+    },
+    {
+      "name": "four core ML families evaluated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "OOF predictions retained",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "independent validation isolated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "feature importance retained",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "fold-local preprocessing declared",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "passed": true
+}

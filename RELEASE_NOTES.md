@@ -1,8 +1,11 @@
-# TSR Studio 0.6 Beta
+# TSR Studio 3.0.1
 
-Adds bulk group mapping, automated Markdown research reports, runtime/audit manifests, and unsigned Windows/macOS build workflows while retaining comprehensive statistics, figure packages, and evidence-graded integration networks. R UI routing, bundled runtimes, advanced metabolomics QC, and platform signing remain explicit post-Beta work.
-# TSR Studio 2.1.1
-
+- 表型数据增加全组总体检验：满足正态性及方差齐性时采用单因素 ANOVA，否则采用 Kruskal–Wallis；总体 P 值和 FDR 与两两 Welch 检验一并保存。
+- 正式 limma/DESeq2 模型自动纳入可识别且非恒定的批次、性别、组织和时间点协变量；设计矩阵不满秩时停止分析并报告完全混杂。
+- WGCNA 增加样本聚类、软阈值、模块成员关系、模块特征向量、模块—性状相关、模块汇总、Hub 基因及 Cytoscape 节点/边全量表。
+- 候选靶标增加 S–E 证据分级和证据分项，可按等级、组学、两阶段 FDR 与方向逆转条件筛选。
+- 研究设计增加标准单给药、多给药、炮制品、组方/拆方及剂量梯度模板；模板只填充组别框架，不覆盖项目身份信息。
+- 验收脚本扩展为 18 项端到端检查，覆盖表型总体检验、常数指标容错、协变量模型、WGCNA 完整结果、证据分级与分析模板。
 - 表型指标不再套用组学火山图；每个指标独立输出全组Tukey箱线图、个体散点和主要比较FDR括号。
 - 每个表型指标新增两两比较效应图，明确标注组A、组B、均值、B−A方向、Hedges g、P值、FDR及是否为给药组间比较。
 - 表型图均附逐样本源数据、全量比较表和可直接用于论文方法部分的图注。

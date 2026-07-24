@@ -6,7 +6,7 @@ R_PKG_SHA1="fc9f4ada15589e8e037b9bf05563d21e97181635"
 TMP_PKG="${TMPDIR:-/tmp}/TSR-R-4.6.1-arm64.pkg"
 
 echo "TSR Studio macOS R 环境安装/修复"
-echo "将安装官方 CRAN R 4.6.1 ARM64，以及 TSR Studio 2.0 的差异、富集与 WGCNA 依赖。"
+echo "将安装官方 CRAN R 4.6.1 ARM64，以及 TSR Studio 3.0.2 的差异、富集与 WGCNA 依赖。"
 
 if [[ ! -x /Library/Frameworks/R.framework/Resources/bin/Rscript ]]; then
   /usr/bin/curl --fail --location --retry 3 "$R_PKG_URL" --output "$TMP_PKG"

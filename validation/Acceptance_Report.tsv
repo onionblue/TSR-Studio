@@ -1,0 +1,33 @@
+Status	Check	Detail
+PASS	demo analysis executed	
+PASS	model comparison exists	
+PASS	treatment comparison exists	
+PASS	treatment pairwise comparison exists	
+PASS	A_vs_B direction: numerator minus reference	
+PASS	all differential rows have FDR	
+PASS	phenotype analysis executed	
+PASS	phenotype omnibus test retained	
+PASS	constant phenotype does not crash	
+PASS	figure package validates PNG and SVG	
+PASS	network uses adaptive canvas	
+PASS	comparison definition present in captions	
+PASS	GO/KEGG mapping report exported	
+PASS	low mapping blocks formal enrichment	
+PASS	WGCNA full result set	
+PASS	covariates enter formal models	
+PASS	target evidence grades implemented	
+PASS	analysis templates implemented	
+PASS	MOFA2 formal runner present	
+PASS	DIABLO formal runner present	
+PASS	consensus WGCNA runner present	
+PASS	nested CV and independent validation present	
+PASS	explainability and optional XGBoost present	
+PASS	3.0 cross-platform dependency installers	
+PASS	3.0.2 in-app R dependency manager	
+PASS	R packages use writable per-user library	
+PASS	nested CV acceptance run executed	 'penalty' was deprecated in version 1.8 and will be removed in 1.10. To avoid this warning, leave 'penalty' set to its default value and use 'l1_ratio' or 'C' instead. Use l1_ratio=0 instead of penalty='l2', l1_ratio=1 instead of penalty='l1', and C=np.inf instead of penalty=None.   warnings.warn( 
+PASS	four core ML families evaluated	
+PASS	OOF predictions retained	
+PASS	independent validation isolated	
+PASS	feature importance retained	
+PASS	fold-local preprocessing declared	

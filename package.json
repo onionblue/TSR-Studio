@@ -1,6 +1,8 @@
 {
   "name": "tsr-studio",
-  "version": "2.1.1",
+  "version": "3.0.2",
+  "description": "中药多组学网络靶标深度分析系统",
+  "author": "河北中医药大学药学院 张丹",
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -13,25 +15,32 @@
     "pack:mac": "npm run build && electron-builder --mac dmg zip",
     "deploy:r:mac": "bash scripts/deploy-r-macos.sh",
     "deploy:r:win": "powershell -ExecutionPolicy Bypass -File scripts/deploy-r-windows.ps1",
-    "templates": "node scripts/generate-templates.mjs"
+    "templates": "node scripts/generate-templates.mjs",
+    "validate:release": "node scripts/validate-release.mjs",
+    "test:acceptance": "node scripts/acceptance-test.mjs",
+    "verify": "npm run build && npm run test:acceptance && npm run validate:release"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "latest",
-    "jstat": "latest",
+    "@vitejs/plugin-react": "5.0.2",
+    "jstat": "1.9.6",
     "jszip": "^3.10.1",
-    "react": "latest",
-    "react-dom": "latest",
-    "typescript": "latest",
-    "vite": "latest",
-    "xlsx": "latest"
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "typescript": "5.8.3",
+    "vite": "7.1.5",
+    "xlsx": "0.18.5"
   },
   "devDependencies": {
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "concurrently": "latest",
-    "electron": "latest",
-    "electron-builder": "latest",
-    "wait-on": "latest"
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "concurrently": "9.2.1",
+    "electron": "38.0.0",
+    "electron-builder": "26.0.12",
+    "wait-on": "8.0.4"
+  },
+  "overrides": {
+    "unique-slug": "3.0.0",
+    "shebang-regex": "3.0.0"
   },
   "build": {
     "appId": "edu.hebcm.tsrstudio",
@@ -42,8 +51,43 @@
       "package.json"
     ],
     "extraResources": [
-      { "from": "analysis-runtime", "to": "analysis-runtime" },
-      { "from": "scripts/Install_TSR_R_Runtime_macOS.command", "to": "Install_TSR_R_Runtime_macOS.command" }
+      {
+        "from": "analysis-runtime",
+        "to": "analysis-runtime",
+        "filter": [
+          "**/*",
+          "!**/._*",
+          "!**/.DS_Store"
+        ]
+      },
+      {
+        "from": "scripts/Install_TSR_R_Runtime_macOS.command",
+        "to": "Install_TSR_R_Runtime_macOS.command"
+      },
+      {
+        "from": "scripts/Install_TSR_R_Runtime_Windows.bat",
+        "to": "Install_TSR_R_Runtime_Windows.bat"
+      },
+      {
+        "from": "scripts/deploy-r-windows.ps1",
+        "to": "deploy-r-windows.ps1"
+      },
+      {
+        "from": "scripts/install-r-packages.R",
+        "to": "install-r-packages.R"
+      },
+      {
+        "from": "scripts/Install_TSR_Python_Runtime_macOS.command",
+        "to": "Install_TSR_Python_Runtime_macOS.command"
+      },
+      {
+        "from": "scripts/Install_TSR_Python_Runtime_Windows.bat",
+        "to": "Install_TSR_Python_Runtime_Windows.bat"
+      },
+      {
+        "from": "scripts/python-requirements-3.0.txt",
+        "to": "python-requirements-3.0.txt"
+      }
     ],
     "directories": {
       "output": "release"

@@ -4,7 +4,26 @@ interface Edge{source:string;target:string;relation:string;direction:string;evid
 export interface IntegrationOptions{featureCount:10|20|24|30|50;pathwayCount:5|10|15|20|30;treatment:string;evidence:'pvalue'|'fdr'}
 const defaultOptions:IntegrationOptions={featureCount:24,pathwayCount:15,treatment:'all',evidence:'pvalue'};
 const W=1800,MIN_H=1100,colors={treatment:'#7B3294',feature:'#008837',pathway:'#E66101',phenotype:'#0571B0'};
-export async function exportIntegrationPackage(project:Project,options:IntegrationOptions=defaultOptions){const {nodes,edges,warnings}=buildIntegratedNetwork(project);if(!edges.length)throw new Error('尚无满足条件的跨层调控关系；至少需要模型对照和一个给药比较');const shown=selectForFigure(nodes,edges,options);if(!shown.edges.length)throw new Error('当前网络筛选条件下没有可显示的关系，请放宽FDR条件或选择其他给药组');const figure=networkSvg(shown.nodes,shown.edges),zip=new JSZip();zip.file('SVG/MultiOmics_Upstream_Downstream.svg',figure.svg);zip.file('Source_Data/All_Nodes.tsv',tsv(nodes));zip.file('Source_Data/All_Edges.tsv',tsv(edges));zip.file('Source_Data/Figure_Nodes.tsv',tsv(shown.nodes));zip.file('Source_Data/Figure_Edges.tsv',tsv(shown.edges));zip.file('Source_Data/Plot_Parameters.tsv',tsv([{Treatment:options.treatment,Feature_count:options.featureCount,Pathway_count:options.pathwayCount,Evidence:options.evidence}]));zip.file('Figure_Legend_图注.txt',caption(project,shown.nodes,shown.edges,warnings));try{zip.file('PNG_600dpi/MultiOmics_Upstream_Downstream.png',await svgPng(figure.svg,figure.width,figure.height,3.34))}catch{/* 保留矢量正式图 */}zip.file('README.txt','TSR Studio 2.1 multi-omics integration package\n全量节点和边保存在Source_Data。论文主图按用户选择的分子数、通路数、给药组和证据阈值生成；筛选不会删除全量结果。');download(await zip.generateAsync({type:'blob'}),`${safe(project.meta.name)}_TSR_Studio_2.1_Integration.zip`)}
+export async function exportIntegrationPackage(project:Project,options:IntegrationOptions=defaultOptions){
+ const {nodes,edges,warnings}=buildIntegratedNetwork(project);
+ if(!edges.length)throw new Error('尚无满足条件的跨层调控关系；至少需要模型对照和一个给药比较');
+ const shown=selectForFigure(nodes,edges,options);
+ if(!shown.edges.length)throw new Error('当前网络筛选条件下没有可显示的关系，请放宽FDR条件或选择其他给药组');
+ const figure=networkSvg(shown.nodes,shown.edges),zip=new JSZip();
+ zip.file('SVG/MultiOmics_Upstream_Downstream.svg',figure.svg);
+ zip.file('Source_Data/All_Nodes.tsv',tsv(nodes));zip.file('Source_Data/All_Edges.tsv',tsv(edges));
+ zip.file('Source_Data/Figure_Nodes.tsv',tsv(shown.nodes));zip.file('Source_Data/Figure_Edges.tsv',tsv(shown.edges));
+ zip.file('Source_Data/Plot_Parameters.tsv',tsv([{Treatment:options.treatment,Feature_count:options.featureCount,Pathway_count:options.pathwayCount,Evidence:options.evidence,Studio_version:'3.0.2'}]));
+ zip.file('Figure_Legend_图注.txt',caption(project,shown.nodes,shown.edges,warnings));
+ let pngStatus='OK',pngMessage='';
+ try{zip.file('PNG_600dpi/MultiOmics_Upstream_Downstream.png',await svgPng(figure.svg,figure.width,figure.height,3.34))}
+ catch(e){pngStatus='FAILED';pngMessage=e instanceof Error?e.message:String(e)}
+ const svgStatus=figure.svg.includes(`viewBox="0 0 ${figure.width} ${figure.height}"`)&&figure.svg.trimEnd().endsWith('</svg>')?'OK':'FAILED';
+ zip.file('Export_Validation.tsv',tsv([{Figure:'MultiOmics_Upstream_Downstream',SVG:svgStatus,PNG:pngStatus,Nodes:shown.nodes.length,Edges:shown.edges.length,Width:figure.width,Height:figure.height,Message:pngMessage}]));
+ if(svgStatus!=='OK'||pngStatus!=='OK')zip.file('导出警告.txt',`网络图导出校验：SVG=${svgStatus}；PNG=${pngStatus}；${pngMessage}\nSVG为正式可编辑图，请优先核对SVG。`);
+ zip.file('README.txt','TSR Studio 3.0.2 multi-omics integration package\n全量节点和边保存在Source_Data。论文主图按用户选择的分子数、通路数、给药组和证据阈值生成；筛选不会删除全量结果。Export_Validation.tsv记录画布、节点、边和PNG导出状态。');
+ download(await zip.generateAsync({type:'blob'}),`${safe(project.meta.name)}_TSR_Studio_3.0.2_Integration.zip`)
+}
 export function buildIntegratedNetwork(project:Project){const nodes=new Map<string,Node>(),edges:Edge[]=[],warnings:string[]=[];const labels=new Map<string,Set<string>>();
  for(const r of project.results)for(const d of r.differential){const key=norm(d.label||d.featureId);if(!labels.has(key))labels.set(key,new Set());labels.get(key)!.add(r.module)}
  for(const r of project.results){const asset=project.assets.find(a=>a.module===r.module),lookup=assetLookup(asset),model=`${project.meta.modelGroup}_vs_${project.meta.controlGroup}`,base=new Map(r.differential.filter(d=>d.comparison===model).map(d=>[d.featureId,d]));

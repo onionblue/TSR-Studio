@@ -13,7 +13,13 @@ positive <- x[is.finite(x) & x > 0]
 transformed <- length(positive) && unname(quantile(positive,.95)) > 100
 if (transformed) x <- log2(x + 1)
 group <- factor(samples$group)
-design <- model.matrix(~0+group); colnames(design) <- levels(group)
+candidate_covariates <- intersect(c('batch','sex','tissue','timepoint'),colnames(samples))
+covariates <- candidate_covariates[vapply(candidate_covariates,function(z){v<-as.character(samples[[z]]);length(unique(v[nzchar(v)]))>1},logical(1))]
+for(z in covariates)samples[[z]]<-factor(samples[[z]])
+formula_text <- paste('~0 + group',paste(covariates,collapse=' + '),sep=if(length(covariates))' + ' else '')
+design <- model.matrix(as.formula(formula_text),data=samples)
+colnames(design)[seq_len(nlevels(group))] <- levels(group)
+if(qr(design)$rank<ncol(design))stop(paste0('设计矩阵不满秩：组别与批次/协变量完全混杂。模型=',formula_text))
 fit <- limma::lmFit(x, design)
 fit <- limma::eBayes(fit, robust=TRUE, trend=TRUE)
 control <- args[4]; model <- args[5]; treatments <- Filter(nzchar, strsplit(args[6],",",fixed=TRUE)[[1]])
@@ -27,7 +33,7 @@ for(pair in pairs){
   tab <- limma::topTable(f,number=Inf,sort.by="none",adjust.method="BH")
   ia <- rownames(samples)[group==a]; ib <- rownames(samples)[group==b]
   scope <- if(a %in% treatments && b %in% treatments) "treatment_pairwise" else "primary"
-  out[[length(out)+1]] <- data.frame(featureId=rownames(tab),label=rownames(tab),comparison=paste0(b,"_vs_",a),comparisonScope=scope,meanA=rowMeans(x[,ia,drop=FALSE],na.rm=TRUE),meanB=rowMeans(x[,ib,drop=FALSE],na.rm=TRUE),effect=tab$logFC,t=tab$t,pValue=tab$P.Value,fdr=tab$adj.P.Val,hedgesG=NA_real_,recovery=NA_real_,AveExpr=tab$AveExpr,B=tab$B,log2Transformed=transformed)
+  out[[length(out)+1]] <- data.frame(featureId=rownames(tab),label=rownames(tab),comparison=paste0(b,"_vs_",a),comparisonScope=scope,meanA=rowMeans(x[,ia,drop=FALSE],na.rm=TRUE),meanB=rowMeans(x[,ib,drop=FALSE],na.rm=TRUE),effect=tab$logFC,t=tab$t,pValue=tab$P.Value,fdr=tab$adj.P.Val,hedgesG=NA_real_,recovery=NA_real_,AveExpr=tab$AveExpr,B=tab$B,log2Transformed=transformed,designFormula=formula_text,covariates=paste(covariates,collapse=';'))
 }
 if(!length(out)) stop("没有可运行的预设比较；请检查组名")
 write.csv(do.call(rbind,out),args[3],row.names=FALSE,na="")

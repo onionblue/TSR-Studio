@@ -11,5 +11,8 @@ if (-not (Get-Command Rscript.exe -ErrorAction SilentlyContinue)) {
   $env:Path = "$(Split-Path $r.FullName);$env:Path"
 }
 
-Rscript.exe "$PSScriptRoot\install-r-packages.R"
-Rscript.exe -e "library(DESeq2); cat('R=',R.version.string,'; DESeq2=',as.character(packageVersion('DESeq2')), '\n')"
+$rscript = (Get-Command Rscript.exe -ErrorAction Stop).Source
+& $rscript "$PSScriptRoot\install-r-packages.R"
+if ($LASTEXITCODE -ne 0) { throw "R package installation returned exit code $LASTEXITCODE" }
+& $rscript -e "p<-c('DESeq2','limma','edgeR','jsonlite','WGCNA','clusterProfiler','org.Mm.eg.db','org.Rn.eg.db','org.Hs.eg.db'); ok<-vapply(p,requireNamespace,logical(1),quietly=TRUE); print(ok); if(!all(ok)) quit(status=2); cat(R.version.string,' | all TSR Studio dependencies=TRUE\n')"
+if ($LASTEXITCODE -ne 0) { throw "R dependency verification failed" }

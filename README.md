@@ -1,11 +1,11 @@
-# TSR Studio 2.0
+# TSR Studio 3.0.1
 
 **中药多组学、活性成分与作用靶标深度分析平台**
 
 开发者：**河北中医药大学药学院 张丹**
 支持系统：Windows x64、macOS Intel、macOS Apple Silicon（M1/M2/M3/M4/M5）
 
-> TSR Studio 2.0 面向中药药效、化学成分、转录组、蛋白组、代谢组、菌群、短链脂肪酸以及行为学/生化指标的整合分析。软件把研究设计、数据质控、差异分析、深度挖掘、候选成分—靶标筛选、分子对接、分子动力学结果整理和论文数据导出放在同一个可追溯项目中。
+> TSR Studio 3.0.1 面向中药药效、化学成分、转录组、蛋白组、代谢组、菌群、短链脂肪酸以及行为学/生化指标的整合分析。软件把研究设计、数据质控、差异分析、深度挖掘、候选成分—靶标筛选、分子对接、分子动力学结果整理和论文数据导出放在同一个可追溯项目中。
 
 ## 一、主要功能
 
@@ -138,11 +138,11 @@ org.Hs.eg.db
 3. 选择 **Build Windows and macOS installers**。
 4. 点击 **Run workflow**。
 5. 构建完成后，在该次运行页面底部下载 Artifacts：
-   - `TSR-Studio-2.1.1-Windows-x64-unsigned`
-   - `TSR-Studio-2.1.1-macOS-Intel-x64-unsigned`
-   - `TSR-Studio-2.1.1-macOS-Apple-Silicon-arm64-unsigned`
+   - `TSR-Studio-3.0.1-Windows-x64-unsigned`
+   - `TSR-Studio-3.0.1-macOS-Intel-x64-unsigned`
+   - `TSR-Studio-3.0.1-macOS-Apple-Silicon-arm64-unsigned`
 
-也可以创建 `v2.1.1` 标签，工作流会同时建立 GitHub Release。
+也可以创建 `v3.0.1` 标签，工作流会同时建立 GitHub Release。
 
 ## 五、安装与首次启动
 
@@ -193,7 +193,7 @@ xattr -dr com.apple.quarantine "/Applications/TSR Studio.app"
 
 ## 八、当前版本状态
 
-版本：**2.1.1**
+版本：**3.0.1**
 
 定位：科研分析与方法验证版
 源码提交：`ac8abf2`
@@ -204,4 +204,4 @@ xattr -dr com.apple.quarantine "/Applications/TSR Studio.app"
 
 本软件用于科研与教学。使用软件生成结果发表论文时，请在方法部分注明软件名称、版本、统计引擎和关键参数，并引用相应基础算法或数据库的原始文献。
 
-软件署名：**TSR Studio 2.0，河北中医药大学药学院 张丹**。
+软件署名：**TSR Studio 3.0.1，河北中医药大学药学院 张丹**。
